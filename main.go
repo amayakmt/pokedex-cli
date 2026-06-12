@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/amayakmt/pokedex-cli/internal/pokeapi"
 )
@@ -11,7 +12,7 @@ import (
 func main() {
 	commands := getCommands()
 	cfg := &config{
-		Client: pokeapi.NewClient(),
+		Client: pokeapi.NewClient(5 * time.Minute),
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -38,7 +39,7 @@ func main() {
 	}
 }
 
-// Helper commands ---------------------------------------
+// Helper structs ---------------------------------------
 
 type cliCommand struct {
 	name        string
@@ -51,6 +52,8 @@ type config struct {
 	Previous *string
 	Client   pokeapi.Client
 }
+
+// Helper commands ---------------------------------------
 
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{

@@ -28,6 +28,14 @@ func (c *Client) GetLocationAreas(pageURL *string) (RespShallowLocation, error) 
 		useURL = *pageURL
 	}
 
+	// check cache first
+	if val, ok := c.cache.Get(useURL); ok {
+		var respStruct RespShallowLocation
+		err := json.Unmarshal(val, &respStruct)
+		return respStruct, err
+	}
+
+	// cache miss - make the request
 	req, err := http.NewRequest("GET", useURL, nil)
 	if err != nil {
 		return RespShallowLocation{}, err
