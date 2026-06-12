@@ -31,6 +31,7 @@ func main() {
 			continue
 		}
 
+		cfg.Args = words[1:]
 		err := command.callback(cfg)
 		if err != nil {
 			fmt.Println(err)
@@ -38,22 +39,6 @@ func main() {
 
 	}
 }
-
-// Helper structs ---------------------------------------
-
-type cliCommand struct {
-	name        string
-	description string
-	callback    func(*config) error
-}
-
-type config struct {
-	Next     *string
-	Previous *string
-	Client   pokeapi.Client
-}
-
-// Helper commands ---------------------------------------
 
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
@@ -69,7 +54,7 @@ func getCommands() map[string]cliCommand {
 		},
 		"map": {
 			name:        "map",
-			description: "Displays the names of 20 location areas in the Pokemon world",
+			description: "Displays the next 20 location areas",
 			callback:    commandMap,
 		},
 		"mapb": {
@@ -80,56 +65,15 @@ func getCommands() map[string]cliCommand {
 	}
 }
 
-func commandExit(cfg *config) error {
-	fmt.Println("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
+type cliCommand struct {
+	name        string
+	description string
+	callback    func(*config) error
 }
 
-func commandHelp(cfg *config) error {
-	fmt.Printf("Welcome to the Pokedex!\n")
-
-	fmt.Printf("Usage:\n\n")
-	for _, command := range getCommands() {
-		fmt.Printf("%v: %v\n", command.name, command.description)
-	}
-
-	return nil
-}
-
-func commandMap(cfg *config) error {
-	resp, err := cfg.Client.GetLocationAreas(cfg.Next)
-	if err != nil {
-		return err
-	}
-
-	for _, loc := range resp.Results {
-		fmt.Println(loc.Name)
-	}
-
-	cfg.Next = resp.Next
-	cfg.Previous = resp.Previous
-
-	return nil
-}
-
-func commandMapb(cfg *config) error {
-	if cfg.Previous == nil {
-		fmt.Println("you're on the first page")
-		return nil
-	}
-
-	resp, err := cfg.Client.GetLocationAreas(cfg.Previous)
-	if err != nil {
-		return err
-	}
-
-	for _, loc := range resp.Results {
-		fmt.Println(loc.Name)
-	}
-
-	cfg.Next = resp.Next
-	cfg.Previous = resp.Previous
-
-	return nil
+type config struct {
+	Next     *string
+	Previous *string
+	Client   pokeapi.Client
+	Args     []string
 }
