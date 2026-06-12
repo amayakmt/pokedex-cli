@@ -7,7 +7,6 @@ import (
 )
 
 type RespShallowLocation struct {
-	Count    int               `json:"count"`
 	Next     *string           `json:"next"`
 	Previous *string           `json:"previous"`
 	Results  []ShallowLocation `json:"results"`
@@ -58,5 +57,6 @@ func (c *Client) GetLocationAreas(pageURL *string) (RespShallowLocation, error) 
 		return RespShallowLocation{}, err
 	}
 
+	c.cache.Add(useURL, body)
 	return respStruct, nil
 }

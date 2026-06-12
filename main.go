@@ -12,7 +12,8 @@ import (
 func main() {
 	commands := getCommands()
 	cfg := &config{
-		Client: pokeapi.NewClient(5 * time.Minute),
+		Client:  pokeapi.NewClient(5 * time.Minute),
+		Pokedex: make(map[string]pokeapi.Pokemon),
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -40,31 +41,6 @@ func main() {
 	}
 }
 
-func getCommands() map[string]cliCommand {
-	return map[string]cliCommand{
-		"exit": {
-			name:        "exit",
-			description: "Exit the pokedex",
-			callback:    commandExit,
-		},
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
-		},
-		"map": {
-			name:        "map",
-			description: "Displays the next 20 location areas",
-			callback:    commandMap,
-		},
-		"mapb": {
-			name:        "mapb",
-			description: "Displays the previous 20 location areas",
-			callback:    commandMapb,
-		},
-	}
-}
-
 type cliCommand struct {
 	name        string
 	description string
@@ -76,4 +52,5 @@ type config struct {
 	Previous *string
 	Client   pokeapi.Client
 	Args     []string
+	Pokedex  map[string]pokeapi.Pokemon
 }
