@@ -69,8 +69,13 @@ func getCommands() map[string]cliCommand {
 		},
 		"map": {
 			name:        "map",
-			description: `Displays the names of 20 location areas in the Pokemon world`,
+			description: "Displays the names of 20 location areas in the Pokemon world",
 			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays the previous 20 location areas",
+			callback:    commandMapb,
 		},
 	}
 }
@@ -94,6 +99,27 @@ func commandHelp(cfg *config) error {
 
 func commandMap(cfg *config) error {
 	resp, err := cfg.Client.GetLocationAreas(cfg.Next)
+	if err != nil {
+		return err
+	}
+
+	for _, loc := range resp.Results {
+		fmt.Println(loc.Name)
+	}
+
+	cfg.Next = resp.Next
+	cfg.Previous = resp.Previous
+
+	return nil
+}
+
+func commandMapb(cfg *config) error {
+	if cfg.Previous == nil {
+		fmt.Println("you're on the first page")
+		return nil
+	}
+
+	resp, err := cfg.Client.GetLocationAreas(cfg.Previous)
 	if err != nil {
 		return err
 	}
