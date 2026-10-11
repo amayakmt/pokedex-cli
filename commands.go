@@ -139,7 +139,7 @@ func commandCatch(cfg *config) error {
 	}
 
 	// higher base experience = harder to catch
-	if rand.Intn(pokemon.BaseExperience) > 40 {
+	if rand.Intn(max(pokemon.BaseExperience, 1)) > 40 {
 		fmt.Printf("%s escaped!\n", name)
 		return nil
 	}
